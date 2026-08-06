@@ -1,0 +1,2 @@
+"use client";
+export default function ErrorPage({reset}:{error:Error&{digest?:string};reset:()=>void}){return <main className="grid min-h-screen place-items-center p-6"><section className="max-w-md text-center"><h1 className="text-3xl font-semibold">Something went wrong</h1><p className="mt-3 text-[#64746f]">The request could not be completed. Try again; if it continues, contact support with the reference shown in the server logs.</p><button onClick={reset} className="mt-6 rounded-xl bg-[#123f35] px-5 py-3 text-white">Try again</button></section></main>}

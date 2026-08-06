@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function Unauthorised(){return <main className="grid min-h-screen place-items-center bg-[#f6f8f7] p-6"><section className="max-w-lg rounded-3xl bg-white p-8"><h1 className="text-3xl font-semibold">Access not authorised</h1><p className="mt-3 text-[#64746f]">Your identity is verified, but it is not assigned to this workspace.</p><Link href="/onboarding" className="mt-6 inline-block rounded-xl bg-[#123f35] px-5 py-3 text-white">Go to lender onboarding</Link></section></main>}
