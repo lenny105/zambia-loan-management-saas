@@ -1,0 +1,4 @@
+import { readdir, readFile } from "node:fs/promises"; import { extname, join } from "node:path";
+const forbidden=[/demo mode/i,/fictional data/i,/sample transaction/i,/NEXT_PUBLIC_(?:LENCO|RESEND|SUPABASE_SERVICE)/,/compound interest/i];
+async function walk(dir){const out=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())out.push(...await walk(p));else if([".ts",".tsx",".js",".mjs"].includes(extname(p))&&!p.includes(".test."))out.push(p)}return out}
+let failed=false;for(const file of await walk("src")){const text=await readFile(file,"utf8");for(const rule of forbidden)if(rule.test(text)){console.error(`${file}: forbidden production pattern ${rule}`);failed=true}}if(failed)process.exit(1);console.log("Production integrity checks passed.");

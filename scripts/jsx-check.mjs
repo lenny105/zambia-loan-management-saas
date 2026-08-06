@@ -1,0 +1,3 @@
+import ts from "typescript"; import { readdir, readFile } from "node:fs/promises"; import { join } from "node:path";
+async function walk(dir){const out=[];for(const e of await readdir(dir,{withFileTypes:true})){const p=join(dir,e.name);if(e.isDirectory())out.push(...await walk(p));else if(p.endsWith(".tsx"))out.push(p)}return out}
+let failed=false;for(const file of await walk("src")){const source=ts.createSourceFile(file,await readFile(file,"utf8"),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);for(const diagnostic of source.parseDiagnostics){console.error(`${file}:${diagnostic.start}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText," ")}`);failed=true}}if(failed)process.exit(1);console.log("JSX AST structure checks passed.");

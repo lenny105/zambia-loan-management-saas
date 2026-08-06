@@ -1,0 +1,8 @@
+project_id = "zambia-loan-management-saas"
+[api]
+enabled = true
+schemas = ["public", "storage", "graphql_public"]
+[db]
+major_version = 17
+[storage]
+enabled = true
