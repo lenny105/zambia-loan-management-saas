@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lender Operations | Zambia",
-  description: "Secure operations software for verified Zambian lenders.",
+  title: "ZamLoan by EZER-X | Lending operations with clarity",
+  description: "Secure operations software built for verified Zambian lenders.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
