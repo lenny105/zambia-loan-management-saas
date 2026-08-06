@@ -1,0 +1,29 @@
+begin;
+alter table public.lenco_webhook_events add column verification_source text not null default 'webhook' check(verification_source in('webhook','status_query'));
+create index collections_poll_due_idx on public.lenco_collections(last_queried_at,created_at) where status in('pending','pay-offline');
+create index webhook_processing_errors_idx on public.lenco_webhook_events(created_at desc) where processing_error is not null and processing_error not in('ignored_event');
+create or replace function private.process_lenco_webhook_insert() returns trigger language plpgsql security definer set search_path='' as $$
+declare event_name text; event_data jsonb; target_collection public.lenco_collections%rowtype; target_invoice public.subscription_invoices%rowtype; target_subscription public.tenant_subscriptions%rowtype; event_amount_minor bigint;
+begin
+ if new.verification_source='webhook' and not new.signature_valid then new.processing_error:='invalid_signature';return new;end if;
+ if new.verification_source='status_query' and new.signature_valid then new.processing_error:='invalid_query_provenance';return new;end if;
+ event_name:=new.payload->>'event';event_data:=new.payload->'data';
+ if event_name not in('collection.successful','collection.failed') or event_data is null then new.processing_error:='ignored_event';new.processed_at:=now();return new;end if;
+ select * into target_collection from public.lenco_collections where internal_reference=event_data->>'reference';if not found then new.processing_error:='collection_not_found';return new;end if;
+ select i.* into target_invoice from public.subscription_invoices i join public.subscription_payment_attempts p on p.invoice_id=i.id where p.id=target_collection.payment_attempt_id for update of i;
+ select * into target_subscription from public.tenant_subscriptions where id=target_invoice.subscription_id for update;
+ if coalesce(event_data->>'amount','')!~'^\d+(\.\d{1,2})?$' then new.processing_error:='invalid_amount';return new;end if;event_amount_minor:=((event_data->>'amount')::numeric*100)::bigint;
+ if event_amount_minor<>target_invoice.amount_minor or event_amount_minor<>target_collection.amount_minor then new.processing_error:='amount_mismatch';return new;end if;
+ if event_data->>'currency'<>'ZMW' or target_invoice.currency<>'ZMW' then new.processing_error:='currency_mismatch';return new;end if;
+ if target_collection.tenant_id<>target_invoice.tenant_id or target_subscription.tenant_id<>target_invoice.tenant_id then new.processing_error:='tenant_mismatch';return new;end if;
+ if target_collection.lenco_reference is not null and target_collection.lenco_reference<>event_data->>'lencoReference' then new.processing_error:='lenco_reference_mismatch';return new;end if;
+ if event_name='collection.failed' then update public.lenco_collections set status='failed',lenco_reference=coalesce(lenco_reference,event_data->>'lencoReference'),last_queried_at=case when new.verification_source='status_query' then now() else last_queried_at end where id=target_collection.id;update public.subscription_payment_attempts set status='failed' where id=target_collection.payment_attempt_id;new.processed_at:=now();return new;end if;
+ if event_data->>'status'<>'successful' then new.processing_error:='success_event_without_success_status';return new;end if;
+ if target_invoice.status='paid' then new.processed_at:=now();return new;end if;if target_invoice.status<>'open' then new.processing_error:='invoice_not_open';return new;end if;
+ if not exists(select 1 from public.tenant_verification_profiles v join public.tenant_licences l on l.tenant_id=v.tenant_id where v.tenant_id=target_invoice.tenant_id and v.status='approved' and l.status='accepted' and l.expiry_date>=current_date) then new.processing_error:='tenant_not_operationally_eligible';return new;end if;
+ update public.lenco_collections set status='successful',lenco_reference=coalesce(lenco_reference,event_data->>'lencoReference'),last_queried_at=case when new.verification_source='status_query' then now() else last_queried_at end where id=target_collection.id;
+ update public.subscription_payment_attempts set status='successful' where id=target_collection.payment_attempt_id;update public.subscription_invoices set status='paid',paid_at=coalesce((event_data->>'completedAt')::timestamptz,now()) where id=target_invoice.id;
+ update public.tenant_subscriptions set status='active',starts_at=now(),ends_at=case billing_period when 'monthly' then now()+interval '1 month' else now()+interval '1 year' end where id=target_subscription.id;update public.tenants set status='active',updated_at=now() where id=target_invoice.tenant_id and status='approved';
+ insert into public.subscription_status_history(tenant_id,subscription_id,from_status,to_status,reason) values(target_invoice.tenant_id,target_subscription.id,target_subscription.status,'active','Verified successful Lenco subscription collection');insert into public.audit_events(tenant_id,entity_type,entity_id,action,correlation_id,metadata) values(target_invoice.tenant_id,'subscription',target_subscription.id,'subscription.activated',gen_random_uuid(),jsonb_build_object('invoiceId',target_invoice.id,'collectionId',target_collection.id,'verificationSource',new.verification_source));insert into public.job_runs(job_type,status,correlation_id) values('generate_subscription_receipt:'||target_invoice.id,'queued',gen_random_uuid());new.processed_at:=now();return new;
+exception when others then new.processing_error:='processing_exception';return new;end $$;
+commit;

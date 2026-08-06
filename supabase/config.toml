@@ -6,3 +6,5 @@ schemas = ["public", "storage", "graphql_public"]
 major_version = 17
 [storage]
 enabled = true
+[functions.lenco-poll]
+verify_jwt = false

@@ -8,7 +8,8 @@
 - [x] Operation activation authority in TypeScript and PostgreSQL
 - [x] Raw-body Lenco signature verification
 - [ ] Complete authenticated mutations and Supabase-backed screen data
-- [ ] Deploy Edge Functions for Lenco polling and Resend processing
+- [x] Deploy the Lenco status-polling Edge Function
+- [ ] Schedule the Lenco poller and deploy Resend processing
 - [ ] Provision dedicated non-production Lenco and Resend environments
 - [x] Provision and link dedicated ZamLoan Development Supabase project
 - [x] Execute migration push dry-run, remote push and database lint
@@ -26,7 +27,8 @@
 - [x] Implement server-side Lenco mobile-money initiation and pending states
 - [x] Implement raw-body signature verification and persisted webhook events
 - [x] Implement atomic, idempotent verified-payment activation
-- [ ] Implement 30-minute Lenco polling, receipt worker and reconciliation console
+- [x] Implement due-collection Lenco polling and the reconciliation console
+- [ ] Schedule 30-minute polling and implement the receipt worker
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push
