@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.subscription-receipts]
 verify_jwt = false
+
+[functions.resend-outbox]
+verify_jwt = false

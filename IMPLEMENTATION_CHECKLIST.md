@@ -10,7 +10,9 @@
 - [ ] Complete authenticated mutations and Supabase-backed screen data
 - [x] Deploy the Lenco status-polling Edge Function
 - [x] Schedule the Lenco poller
-- [ ] Deploy Resend processing
+- [x] Deploy and schedule the Resend outbox worker
+- [x] Implement the verified Resend delivery webhook
+- [ ] Register the Resend webhook after public application deployment
 - [ ] Provision dedicated non-production Lenco and Resend environments
 - [x] Provision and link dedicated ZamLoan Development Supabase project
 - [x] Execute migration push dry-run, remote push and database lint
