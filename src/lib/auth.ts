@@ -19,3 +19,5 @@ export async function requirePlatformUser() {
   if (data.mfa_required && aal?.data?.currentLevel !== "aal2") redirect("/auth/mfa");
   return { user, platformUserId: data.id };
 }
+
+export async function requirePlatformPermission(permission:string){const identity=await requirePlatformUser();const admin=createAdminClient();const {data,error}=await admin.from("platform_user_roles").select("platform_roles(permissions)").eq("platform_user_id",identity.platformUserId);if(error)throw error;const allowed=(data??[]).some(row=>{const role=Array.isArray(row.platform_roles)?row.platform_roles[0]:row.platform_roles;return role?.permissions?.includes(permission)});if(!allowed)redirect("/unauthorised");return identity;}

@@ -15,6 +15,9 @@
 - [x] Implement email OTP client flow, cookie refresh and protected route authorities
 - [x] Implement persistent business, licence, private evidence upload, declaration and submission workflow
 - [x] Enforce onboarding submission atomically with status history and audit events
+- [x] Implement compliance queue, private evidence review and controlled decisions
+- [x] Implement platform permissions, audited signed downloads and TOTP MFA
+- [ ] Link the first platform administrator using `pnpm platform:bootstrap`
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push

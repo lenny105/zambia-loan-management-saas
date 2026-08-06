@@ -13,6 +13,7 @@
     "check:integrity": "node scripts/integrity.mjs",
     "check:jsx": "node scripts/jsx-check.mjs",
     "release:check": "pnpm check:integrity && pnpm check:jsx && pnpm test && pnpm lint && pnpm typecheck && pnpm build"
+    ,"platform:bootstrap": "node --env-file=.env.local scripts/bootstrap-platform-admin.mjs"
   },
   "dependencies": {
     "next": "16.3.0",

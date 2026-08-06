@@ -11,6 +11,13 @@ Production-oriented multi-tenant software for verified Zambian lenders. EZER-X s
 
 Live provider tests require non-production Lenco and Resend credentials. CI deliberately does not simulate those providers.
 
+## First platform administrator
+
+The administrator must first complete email OTP sign-in. Set `PLATFORM_ADMIN_EMAIL`
+in `.env.local`, then run `pnpm platform:bootstrap`. The command links only an
+existing verified Auth identity, assigns the seeded super-admin role, and leaves
+TOTP MFA mandatory. It never creates or prints credentials.
+
 ## GitHub handoff
 
 GitHub CLI was unavailable during initialisation. Install it, then run `gh auth login`, verify `gh auth status` shows `lenny105`, and run `gh repo create lenny105/zambia-loan-management-saas --private --source=. --remote=origin`, followed by `git push -u origin main` after the release gate passes.
