@@ -1001,3 +1001,40 @@ success cannot mask the failure.
 **References**
 
 Migration `202608060003_onboarding_workflow.sql`.
+
+### Hosted OTP length differed from the sign-in input
+
+**Date:** 2026-08-06
+
+**Affected area:** Authentication
+
+**Severity:** High
+
+**Symptom**
+
+Valid delivered email codes were rejected as incorrect or expired.
+
+**Root cause**
+
+The hosted Auth project issued eight-digit OTPs while the sign-in component
+silently truncated input to six digits.
+
+**Fix applied**
+
+The input now accepts Supabase's supported six-to-ten-digit range and never
+silently truncates a supported code. Production configuration should still be
+pinned to the approved six-digit experience.
+
+**Prevention rule**
+
+Test first-time and returning authentication against the actual hosted Auth
+configuration and never assume provider defaults match UI constraints.
+
+**Automated protection**
+
+Strict TypeScript and the optimized build validate the corrected input; live
+Auth E2E remains a required protected-environment release check.
+
+**References**
+
+Supabase `auth.email.otp_length`; authentication incident on 2026-08-06.
