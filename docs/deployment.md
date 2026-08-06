@@ -18,5 +18,11 @@ provider support; keep the documented 30-minute status poller enabled as the
 fallback.
 
 Production status: the Resend endpoint is registered, enabled and signature-
-verified against the deployed application. The Lenco setup request was sent to
-`support@lenco.co`; activation remains pending their confirmation.
+verified against the deployed application. The Lenco webhook URL has also been
+configured in the provider account.
+
+In PowerShell, run `$env:PLAYWRIGHT_BASE_URL='https://zamloan.ezer-x.com'; pnpm
+test:e2e:production` for non-mutating production route and header checks. Run
+`pnpm dlx supabase@latest db query --linked --file
+supabase/tests/rls_isolation.sql` for the transaction-wrapped tenant visibility
+test; it always rolls its fixtures back.

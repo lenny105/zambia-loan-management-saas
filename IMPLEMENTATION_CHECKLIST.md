@@ -34,7 +34,9 @@
 - [x] Implement due-collection Lenco polling and the reconciliation console
 - [x] Implement and deploy the idempotent subscription receipt worker
 - [x] Schedule 30-minute polling and receipt processing
-- [ ] Execute live authentication, RLS and Playwright E2E tests
+- [x] Execute production public-route, webhook rejection and security-header Playwright tests
+- [x] Execute transaction-wrapped live tenant RLS isolation tests
+- [ ] Execute human first-time/returning OTP and TOTP MFA production journeys
 - [ ] Generate and store immutable invoice PDFs
 - [x] Generate, privately store and securely download immutable receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push
