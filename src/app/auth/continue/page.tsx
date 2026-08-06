@@ -14,5 +14,9 @@ export default async function ContinueAfterSignIn() {
     .maybeSingle();
 
   if (error) throw error;
-  redirect(data?.active ? "/operations" : "/onboarding");
+  if(data?.active)redirect("/operations");
+  const {data:membership,error:membershipError}=await admin.from("tenant_memberships").select("tenants(status)").eq("profile_id",user.id).eq("active",true).limit(1).maybeSingle();
+  if(membershipError)throw membershipError;
+  const tenant=membership&&(Array.isArray(membership.tenants)?membership.tenants[0]:membership.tenants);
+  redirect(tenant?.status==="active"?"/workspace":tenant?"/onboarding/status":"/onboarding");
 }

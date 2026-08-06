@@ -55,6 +55,7 @@ export default function Home() {
             </span>
           </Link>
           <div className="hidden items-center gap-8 text-sm font-medium text-[#294b42] md:flex">
+            <Link href="/borrow" className="transition hover:text-[#0f755f]">Find a lender</Link>
             <a href="#platform" className="transition hover:text-[#0f755f]">Platform</a>
             <a href="#how-it-works" className="transition hover:text-[#0f755f]">How it works</a>
             <a href="#trust" className="transition hover:text-[#0f755f]">Trust & compliance</a>
@@ -89,13 +90,14 @@ export default function Home() {
               A secure operating platform that helps licensed lenders organise compliance, teams and customer workflows in one trusted workspace.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link href="/onboarding" className="inline-flex items-center justify-center gap-3 rounded-full bg-[#123f35] px-7 py-4 font-semibold text-white shadow-xl shadow-[#123f35]/20 transition hover:-translate-y-0.5 hover:bg-[#0d332b]">
-                Create lender account <ArrowIcon />
+              <Link href="/borrow" className="inline-flex items-center justify-center gap-3 rounded-full bg-[#123f35] px-7 py-4 font-semibold text-white shadow-xl shadow-[#123f35]/20 transition hover:-translate-y-0.5 hover:bg-[#0d332b]">
+                I want to apply for a loan <ArrowIcon />
               </Link>
-              <Link href="/onboarding/status" className="inline-flex items-center justify-center rounded-full border border-[#123f35]/15 bg-white/80 px-7 py-4 font-semibold text-[#123f35] backdrop-blur transition hover:bg-white">
-                Check application status
+              <Link href="/onboarding" className="inline-flex items-center justify-center rounded-full border border-[#123f35]/15 bg-white/80 px-7 py-4 font-semibold text-[#123f35] backdrop-blur transition hover:bg-white">
+                I represent a lender
               </Link>
             </div>
+            <p className="mt-4 text-sm text-[#5c716a]">Already registered? <Link href="/auth/sign-in" className="font-semibold text-[#146b57] underline underline-offset-4">Sign in to your workspace</Link></p>
             <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#47675e]">
               {["Secure by design", "ZMW-native", "Locally relevant"].map((item) => (
                 <span key={item} className="flex items-center gap-2"><span className="grid size-5 place-items-center rounded-full bg-[#dcebe5] text-[#16745f]"><CheckIcon /></span>{item}</span>
@@ -200,7 +202,7 @@ export default function Home() {
             <p className="text-xl font-semibold">ZamLoan <span className="text-sm font-normal text-[#6a7b76]">by EZER-X</span></p>
             <p className="mt-3 max-w-xl text-sm leading-6 text-[#6a7b76]">Operations software for verified Zambian lenders. EZER-X is a technology provider and not a lender.</p>
           </div>
-          <div className="flex gap-6 text-sm font-medium"><Link href="/auth/sign-in">Sign in</Link><Link href="/onboarding">Apply</Link></div>
+          <div className="flex flex-wrap gap-6 text-sm font-medium"><Link href="/borrow">Find a lender</Link><Link href="/auth/sign-in">Sign in</Link><Link href="/onboarding">Create lender account</Link></div>
         </div>
       </footer>
     </main>
