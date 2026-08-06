@@ -9,7 +9,9 @@
 - [x] Raw-body Lenco signature verification
 - [ ] Complete authenticated mutations and Supabase-backed screen data
 - [ ] Deploy Edge Functions for Lenco polling and Resend processing
-- [ ] Provision dedicated non-production Supabase/Lenco/Resend environments
-- [ ] Execute live E2E, migration push dry-run and database lint
+- [ ] Provision dedicated non-production Lenco and Resend environments
+- [x] Provision and link dedicated ZamLoan Development Supabase project
+- [x] Execute migration push dry-run, remote push and database lint
+- [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
-- [ ] Install GitHub CLI, authenticate as `lenny105`, create private remote and push
+- [x] Authenticate GitHub CLI as `lenny105`, create private remote and push
