@@ -21,6 +21,9 @@
 - [x] Link `operations@ezer-x.com` as the first platform super administrator
 - [x] Implement database-backed plan creation and immutable effective-dated versions
 - [x] Store and test all plan prices as integer ngwee
+- [x] Implement approved-tenant plan selection with database-derived prices
+- [x] Implement server-created invoice identity, totals, lines, audit and email outbox
+- [ ] Implement Lenco initiation, verified activation, polling and reconciliation
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push
