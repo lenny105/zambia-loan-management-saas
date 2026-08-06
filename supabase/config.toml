@@ -6,6 +6,21 @@ schemas = ["public", "storage", "graphql_public"]
 major_version = 17
 [storage]
 enabled = true
+
+[auth]
+site_url = "https://zamloan.ezer-x.com"
+additional_redirect_urls = ["https://zamloan.ezer-x.com/**", "http://localhost:3000/**"]
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.email]
+enable_confirmations = true
+otp_length = 8
+otp_expiry = 3600
+max_frequency = "1s"
+
 [functions.lenco-poll]
 verify_jwt = false
 
