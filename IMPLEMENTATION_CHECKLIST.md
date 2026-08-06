@@ -23,7 +23,10 @@
 - [x] Store and test all plan prices as integer ngwee
 - [x] Implement approved-tenant plan selection with database-derived prices
 - [x] Implement server-created invoice identity, totals, lines, audit and email outbox
-- [ ] Implement Lenco initiation, verified activation, polling and reconciliation
+- [x] Implement server-side Lenco mobile-money initiation and pending states
+- [x] Implement raw-body signature verification and persisted webhook events
+- [x] Implement atomic, idempotent verified-payment activation
+- [ ] Implement 30-minute Lenco polling, receipt worker and reconciliation console
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push

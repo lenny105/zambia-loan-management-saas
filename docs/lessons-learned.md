@@ -1038,3 +1038,40 @@ Auth E2E remains a required protected-environment release check.
 **References**
 
 Supabase `auth.email.otp_length`; authentication incident on 2026-08-06.
+
+### Lenco webhook derived key used the wrong representation
+
+**Date:** 2026-08-06
+
+**Affected area:** Payments
+
+**Severity:** High
+
+**Symptom**
+
+The initial verifier derived SHA-256 bytes while Lenco's documented algorithm
+uses the hexadecimal SHA-256 string as the HMAC-SHA512 key.
+
+**Root cause**
+
+The difference between `digest()` and `digest("hex")` was overlooked when
+translating the provider example.
+
+**Fix applied**
+
+The verifier now uses the exact documented hexadecimal derived key.
+
+**Prevention rule**
+
+Cryptographic provider contracts must be implemented byte-for-byte from the
+current primary documentation and tested with an independently constructed
+signature.
+
+**Automated protection**
+
+Unit tests accept the documented representation and explicitly reject the raw
+digest-byte variant.
+
+**References**
+
+Lenco API v2 webhook verification documentation.

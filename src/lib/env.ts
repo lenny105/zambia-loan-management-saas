@@ -7,6 +7,7 @@ const publicSchema = z.object({
 const lencoSchema = z.object({
   LENCO_API_URL: z.url().default("https://api.lenco.co/access/v2"),
   LENCO_API_TOKEN: z.string().min(1),
+  LENCO_ENABLED_OPERATORS: z.string().default(""),
 });
 
 export function getPublicEnv() { return publicSchema.parse(process.env); }

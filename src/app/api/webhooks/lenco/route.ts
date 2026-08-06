@@ -1,13 +1,3 @@
-import { NextResponse } from "next/server";
-import { getLencoEnv } from "@/lib/env";
-import { payloadHash, verifyLencoSignature } from "@/lib/domain/lenco";
-import { logError } from "@/lib/logger";
-
-export async function POST(request: Request) {
-  const rawBody=await request.text();
-  try { const { LENCO_API_TOKEN }=getLencoEnv(); const signature=request.headers.get("x-lenco-signature")??"";
-    if(!verifyLencoSignature(rawBody,signature,LENCO_API_TOKEN)) return NextResponse.json({error:"Invalid signature"},{status:401});
-    // Persistence and activation are delegated to the database transaction in private.process_lenco_event.
-    return NextResponse.json({received:true,payloadHash:payloadHash(rawBody)},{status:202});
-  } catch(error){const correlationId=logError("lenco.webhook",error);return NextResponse.json({error:"Webhook unavailable",correlationId},{status:503});}
-}
+import { NextResponse } from "next/server";import { z } from "zod";import { getLencoEnv } from "@/lib/env";import { payloadHash,verifyLencoSignature } from "@/lib/domain/lenco";import { createAdminClient } from "@/lib/supabase/admin";import { logError } from "@/lib/logger";
+const eventSchema=z.object({event:z.string().optional(),data:z.object({id:z.string().optional(),reference:z.string().nullable().optional(),lencoReference:z.string().optional(),status:z.string().optional()}).passthrough().optional()}).passthrough();
+export async function POST(request:Request){const rawBody=await request.text(),hash=payloadHash(rawBody);try{const{LENCO_API_TOKEN}=getLencoEnv();const signature=request.headers.get("x-lenco-signature")??"";const valid=verifyLencoSignature(rawBody,signature,LENCO_API_TOKEN);let payload:unknown;try{payload=JSON.parse(rawBody)}catch{payload={invalidJson:true}}const parsed=eventSchema.safeParse(payload);const reference=parsed.success?(parsed.data.data?.reference??parsed.data.data?.lencoReference??`event-${hash}`):`invalid-${hash}`;const eventId=parsed.success&&parsed.data.data?.id?`${parsed.data.event??"event"}:${parsed.data.data.id}:${parsed.data.data.status??"unknown"}`:`payload:${hash}`;const admin=createAdminClient();const{error}=await admin.from("lenco_webhook_events").insert({event_id:eventId,reference,payload,payload_hash:hash,signature_valid:valid});if(error&&error.code!=="23505")throw error;if(!valid)return NextResponse.json({error:"Invalid signature"},{status:401});return NextResponse.json({received:true,duplicate:error?.code==="23505"},{status:202});}catch(error){const correlationId=logError("lenco.webhook",error);return NextResponse.json({error:"Webhook unavailable",correlationId},{status:503});}}
