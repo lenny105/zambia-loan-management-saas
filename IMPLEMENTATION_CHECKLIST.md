@@ -12,7 +12,8 @@
 - [x] Schedule the Lenco poller
 - [x] Deploy and schedule the Resend outbox worker
 - [x] Implement the verified Resend delivery webhook
-- [ ] Register the Resend webhook after public application deployment
+- [x] Register and production-verify the Resend webhook
+- [ ] Confirm Lenco has provisioned the production webhook after provider support response
 - [ ] Provision dedicated non-production Lenco and Resend environments
 - [x] Provision and link dedicated ZamLoan Development Supabase project
 - [x] Execute migration push dry-run, remote push and database lint

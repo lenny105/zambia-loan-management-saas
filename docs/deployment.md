@@ -16,3 +16,7 @@ The Resend signing secret returned when that endpoint is created must be stored
 as `RESEND_WEBHOOK_SECRET` in Netlify. Lenco provisions its webhook URL through
 provider support; keep the documented 30-minute status poller enabled as the
 fallback.
+
+Production status: the Resend endpoint is registered, enabled and signature-
+verified against the deployed application. The Lenco setup request was sent to
+`support@lenco.co`; activation remains pending their confirmation.
