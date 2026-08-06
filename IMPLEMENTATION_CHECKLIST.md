@@ -13,6 +13,8 @@
 - [x] Provision and link dedicated ZamLoan Development Supabase project
 - [x] Execute migration push dry-run, remote push and database lint
 - [x] Implement email OTP client flow, cookie refresh and protected route authorities
+- [x] Implement persistent business, licence, private evidence upload, declaration and submission workflow
+- [x] Enforce onboarding submission atomically with status history and audit events
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push

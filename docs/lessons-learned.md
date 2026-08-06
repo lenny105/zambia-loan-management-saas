@@ -961,3 +961,43 @@ Before writing product features:
 10. Do not call the first release production-ready until a clean Netlify build,
     authentication test, authorization-denial test, and one complete core user
     journey have passed.
+
+## ZamLoan incidents
+
+### Extension function was outside the migration search path
+
+**Date:** 2026-08-06
+
+**Affected area:** Database
+
+**Severity:** Low
+
+**Symptom**
+
+The development database rejected the onboarding migration because `digest`
+could not be resolved, although `pgcrypto` was installed.
+
+**Root cause**
+
+Supabase installed `pgcrypto` in the `extensions` schema and the migration
+called the function without a schema qualifier.
+
+**Fix applied**
+
+The migration now calls `extensions.digest` explicitly. The failed migration
+was transactional and left no partial database state.
+
+**Prevention rule**
+
+Schema-qualify extension functions and execute dry-run, fail-fast push, then
+remote lint in that order.
+
+**Automated protection**
+
+The linked development migration apply is part of the release workflow; the
+shell sequence exits immediately when dry-run or push fails so a later lint
+success cannot mask the failure.
+
+**References**
+
+Migration `202608060003_onboarding_workflow.sql`.
