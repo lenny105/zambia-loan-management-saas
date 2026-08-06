@@ -1,0 +1,10 @@
+begin;
+alter table public.plan_versions add constraint plan_versions_dates_valid check(effective_to is null or effective_to>=effective_from);
+create unique index one_open_plan_version on public.plan_versions(plan_id) where effective_to is null;
+create or replace function private.prevent_plan_version_mutation() returns trigger language plpgsql set search_path='' as $$ begin if tg_op='DELETE' and not exists(select 1 from public.tenant_subscriptions s where s.plan_version_id=old.id) then return old; end if; raise exception 'plan versions are immutable once used; create a new effective-dated version'; end $$;
+revoke all on function private.prevent_plan_version_mutation() from public,anon,authenticated;
+create trigger plan_versions_immutable before update or delete on public.plan_versions for each row execute function private.prevent_plan_version_mutation();
+create or replace function private.prevent_plan_entitlement_mutation() returns trigger language plpgsql set search_path='' as $$ begin if tg_op='DELETE' and not exists(select 1 from public.tenant_subscriptions s where s.plan_version_id=old.plan_version_id) then return old; end if; raise exception 'plan entitlements are immutable once their version is used'; end $$;
+revoke all on function private.prevent_plan_entitlement_mutation() from public,anon,authenticated;
+create trigger plan_entitlements_immutable before update or delete on public.plan_entitlements for each row execute function private.prevent_plan_entitlement_mutation();
+commit;

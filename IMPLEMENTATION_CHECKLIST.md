@@ -18,6 +18,9 @@
 - [x] Implement compliance queue, private evidence review and controlled decisions
 - [x] Implement platform permissions, audited signed downloads and TOTP MFA
 - [ ] Link the first platform administrator using `pnpm platform:bootstrap`
+- [x] Link `operations@ezer-x.com` as the first platform super administrator
+- [x] Implement database-backed plan creation and immutable effective-dated versions
+- [x] Store and test all plan prices as integer ngwee
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice and receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push

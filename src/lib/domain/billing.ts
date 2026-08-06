@@ -7,3 +7,5 @@ export function tenantCanOperate(gate: OperationGate): boolean {
 export function assertMinorUnits(value: number): void {
   if (!Number.isSafeInteger(value) || value < 0) throw new Error("Money must be a non-negative integer in ngwee");
 }
+export function parseZmwToMinor(value:string):number{const normalized=value.trim();if(!/^\d+(?:\.\d{1,2})?$/.test(normalized))throw new Error("Enter a valid ZMW amount with no more than two decimal places");const[whole,fraction=""]=normalized.split(".");const minor=Number(whole)*100+Number(fraction.padEnd(2,"0"));assertMinorUnits(minor);return minor;}
+export function formatMinorToZmw(value:number):string{assertMinorUnits(value);return new Intl.NumberFormat("en-ZM",{style:"currency",currency:"ZMW"}).format(value/100)}
