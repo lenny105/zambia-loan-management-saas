@@ -9,3 +9,10 @@ invocation every 30 minutes with Supabase Cron. Status-query records use
 `verification_source=status_query`; they are never mislabelled as signed
 webhooks. Configure the public Lenco webhook as `/api/webhooks/lenco` only after
 deployment because localhost cannot receive provider events.
+
+Verified successful collections enqueue exactly one subscription receipt job.
+The `subscription-receipts` Edge Function claims jobs with row locking, generates
+an EZER-X PDF, stores it in the private `platform-billing` bucket, records its
+SHA-256 hash and queues one confirmation email. A failed or duplicate invocation
+cannot create a second receipt. Both Edge Functions require the server-only
+`CRON_SECRET` header and are intended to run every 30 minutes.

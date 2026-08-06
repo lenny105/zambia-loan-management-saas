@@ -28,7 +28,9 @@
 - [x] Implement raw-body signature verification and persisted webhook events
 - [x] Implement atomic, idempotent verified-payment activation
 - [x] Implement due-collection Lenco polling and the reconciliation console
-- [ ] Schedule 30-minute polling and implement the receipt worker
+- [x] Implement and deploy the idempotent subscription receipt worker
+- [ ] Schedule 30-minute polling and receipt processing
 - [ ] Execute live authentication, RLS and Playwright E2E tests
-- [ ] Generate and store immutable invoice and receipt PDFs
+- [ ] Generate and store immutable invoice PDFs
+- [x] Generate, privately store and securely download immutable receipt PDFs
 - [x] Authenticate GitHub CLI as `lenny105`, create private remote and push
