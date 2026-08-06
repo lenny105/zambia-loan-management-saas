@@ -65,24 +65,15 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="relative mx-auto min-h-[820px] max-w-[1600px] lg:min-h-[900px]">
-        <Image
-          src="/images/zamloan-team-hero.png"
-          alt="A Zambian lending team reviewing business performance together"
-          fill
-          priority
-          className="object-cover object-[69%_center]"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(246,247,242,.99)_0%,rgba(246,247,242,.94)_32%,rgba(246,247,242,.38)_58%,rgba(246,247,242,.04)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f6f7f2] to-transparent" />
-        <div className="relative z-10 mx-auto flex min-h-[820px] max-w-[1400px] items-center px-5 pb-20 pt-32 sm:px-8 lg:min-h-[900px] lg:px-12">
-          <div className="max-w-[700px]">
+      <section className="mx-auto max-w-[1600px] bg-[#f6f7f2]">
+        <div className="grid lg:min-h-[900px] lg:grid-cols-[.95fr_1.05fr]">
+          <div className="flex items-center px-5 pb-20 pt-36 sm:px-8 sm:pb-24 lg:px-12 lg:pb-20 lg:pt-32 xl:pl-[max(3rem,calc((100vw-1400px)/2))]">
+            <div className="max-w-[650px]">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#1b715e]/15 bg-white/70 px-4 py-2 text-xs font-bold uppercase tracking-[.17em] text-[#146b57] shadow-sm backdrop-blur-md">
               <span className="size-2 rounded-full bg-[#e7a63a]" />
               Built for verified Zambian lenders
             </div>
-            <h1 className="text-[3.3rem] font-semibold leading-[.97] tracking-[-.055em] text-[#0d3028] sm:text-7xl lg:text-[5.6rem]">
+            <h1 className="text-[3.3rem] font-semibold leading-[.97] tracking-[-.055em] text-[#0d3028] sm:text-7xl lg:text-[4.8rem] xl:text-[5.2rem]">
               Lending operations,<br />with <span className="text-[#16806a]">clarity.</span>
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-8 text-[#48645c] sm:text-xl">
@@ -100,6 +91,23 @@ export default function Home() {
               {["Secure by design", "ZMW-native", "Locally relevant"].map((item) => (
                 <span key={item} className="flex items-center gap-2"><span className="grid size-5 place-items-center rounded-full bg-[#dcebe5] text-[#16745f]"><CheckIcon /></span>{item}</span>
               ))}
+            </div>
+          </div>
+          </div>
+          <div className="relative min-h-[500px] overflow-hidden lg:min-h-[900px] lg:rounded-bl-[3rem]">
+            <Image
+              src="/images/zamloan-team-hero.png"
+              alt="A Zambian lending team reviewing business performance together"
+              fill
+              priority
+              className="object-cover object-[68%_center]"
+              sizes="(min-width: 1024px) 53vw, 100vw"
+            />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0b3028]/75 to-transparent p-6 pt-32 text-white sm:p-9 lg:p-10">
+              <div className="max-w-sm rounded-2xl border border-white/20 bg-[#0b3028]/75 p-5 backdrop-blur-md">
+                <p className="text-xs font-bold uppercase tracking-[.16em] text-[#a8d8cc]">One shared view</p>
+                <p className="mt-2 text-lg font-semibold">Bring compliance, people and operations together.</p>
+              </div>
             </div>
           </div>
         </div>
