@@ -9,7 +9,8 @@
 - [x] Raw-body Lenco signature verification
 - [ ] Complete authenticated mutations and Supabase-backed screen data
 - [x] Deploy the Lenco status-polling Edge Function
-- [ ] Schedule the Lenco poller and deploy Resend processing
+- [x] Schedule the Lenco poller
+- [ ] Deploy Resend processing
 - [ ] Provision dedicated non-production Lenco and Resend environments
 - [x] Provision and link dedicated ZamLoan Development Supabase project
 - [x] Execute migration push dry-run, remote push and database lint
@@ -29,7 +30,7 @@
 - [x] Implement atomic, idempotent verified-payment activation
 - [x] Implement due-collection Lenco polling and the reconciliation console
 - [x] Implement and deploy the idempotent subscription receipt worker
-- [ ] Schedule 30-minute polling and receipt processing
+- [x] Schedule 30-minute polling and receipt processing
 - [ ] Execute live authentication, RLS and Playwright E2E tests
 - [ ] Generate and store immutable invoice PDFs
 - [x] Generate, privately store and securely download immutable receipt PDFs

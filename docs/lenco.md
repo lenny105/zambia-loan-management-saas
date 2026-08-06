@@ -16,3 +16,8 @@ an EZER-X PDF, stores it in the private `platform-billing` bucket, records its
 SHA-256 hash and queues one confirmation email. A failed or duplicate invocation
 cannot create a second receipt. Both Edge Functions require the server-only
 `CRON_SECRET` header and are intended to run every 30 minutes.
+
+For each environment, store `zamloan_project_url` and the same `CRON_SECRET`
+value as `zamloan_cron_secret` in Supabase Vault, then run
+`supabase db query --linked --file supabase/configure_cron.sql`. The Lenco job
+runs on the hour and half-hour; receipt processing is staggered by five minutes.
