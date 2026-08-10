@@ -1,6 +1,7 @@
 import { requireTenantWorkspace } from "@/lib/tenant-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMinorToZmw } from "@/lib/domain/billing";
+import { LoanProductForm } from "@/components/loan-product-form";
 export default async function Products() {
   const { tenantId } = await requireTenantWorkspace();
   const { data, error } = await createAdminClient()
@@ -18,11 +19,11 @@ export default async function Products() {
       <p className="mt-2 text-[#64746f]">
         Your organisation—not EZER-X—sets and approves every product term.
       </p>
-      <section className="mt-8 grid gap-4 lg:grid-cols-2">
+      <div className="mt-8 grid gap-7 xl:grid-cols-[minmax(0,1fr)_440px]">
+      <section className="grid content-start gap-4 lg:grid-cols-2 xl:grid-cols-1">
         {!data.length ? (
           <div className="rounded-2xl bg-white p-10 text-center text-sm text-[#64746f]">
-            No products configured. Product creation will remain unavailable
-            until disclosure validation is complete.
+            No products configured. Use the product builder to publish your first borrower offer.
           </div>
         ) : (
           data.map((x) => (
@@ -49,6 +50,8 @@ export default async function Products() {
           ))
         )}
       </section>
+      <aside><LoanProductForm /></aside>
+      </div>
     </main>
   );
 }
