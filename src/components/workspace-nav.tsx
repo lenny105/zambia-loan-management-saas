@@ -10,6 +10,7 @@ const items = [
   ["Loans", "/workspace/loans"],
   ["Repayments", "/workspace/repayments"],
   ["Complaints", "/workspace/complaints"],
+  ["Collateral", "/workspace/collateral"],
   ["Branches", "/workspace/branches"],
   ["Team & roles", "/workspace/team"],
   ["Branding", "/workspace/branding"],
