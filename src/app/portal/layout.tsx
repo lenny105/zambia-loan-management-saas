@@ -1,2 +1,27 @@
-import type{ReactNode}from"react";import Link from"next/link";import{requireUser}from"@/lib/auth";
-export const dynamic="force-dynamic";export default async function PortalLayout({children}:{children:ReactNode}){await requireUser();return <div className="min-h-screen bg-[#f6f7f2] text-[#102a24]"><header className="border-b bg-white"><div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5"><Link href="/portal" className="text-xl font-semibold">My loan applications</Link><nav className="flex gap-5 text-sm font-medium"><Link href="/borrow">Find a lender</Link><Link href="/portal/complaints">Complaints</Link></nav></div></header>{children}</div>}
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { requireUser } from "@/lib/auth";
+export const dynamic = "force-dynamic";
+export default async function PortalLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  await requireUser();
+  return (
+    <div className="min-h-screen bg-[#f6f7f2] text-[#102a24]">
+      <header className="border-b bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
+          <Link href="/portal" className="text-xl font-semibold">
+            My loan applications
+          </Link>
+          <nav className="flex gap-5 text-sm font-medium">
+            <Link href="/borrow">Find a lender</Link>
+            <Link href="/portal/complaints">Complaints</Link>
+          </nav>
+        </div>
+      </header>
+      {children}
+    </div>
+  );
+}

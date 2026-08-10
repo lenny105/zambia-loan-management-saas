@@ -1,2 +1,70 @@
-import{createHash}from"node:crypto";import{NextResponse}from"next/server";import{z}from"zod";import{requireUser}from"@/lib/auth";import{createAdminClient}from"@/lib/supabase/admin";import{receiptPdf}from"@/lib/pdf/loan-documents";
-export async function GET(_:Request,{params}:{params:Promise<{receiptId:string}>}){const user=await requireUser(),id=z.uuid().safeParse((await params).receiptId);if(!id.success)return new NextResponse("Not found",{status:404});const a=createAdminClient();const{data:x,error}=await a.from("loan_repayment_receipts").select("id,tenant_id,receipt_number,amount_minor,document_path,document_hash,loan_repayments(method,external_reference,received_at,loans(account_number,borrowers(first_name,last_name,profile_id),tenants(legal_name,trading_name)))").eq("id",id.data).maybeSingle();if(error||!x)return new NextResponse("Not found",{status:404});const r=Array.isArray(x.loan_repayments)?x.loan_repayments[0]:x.loan_repayments,l=r&&(Array.isArray(r.loans)?r.loans[0]:r.loans),b=l&&(Array.isArray(l.borrowers)?l.borrowers[0]:l.borrowers),t=l&&(Array.isArray(l.tenants)?l.tenants[0]:l.tenants);if(b?.profile_id!==user.id)return new NextResponse("Not found",{status:404});let path=x.document_path;if(!path){const bytes=await receiptPdf({lender:t?.trading_name||t?.legal_name||"Lender",borrower:`${b.first_name} ${b.last_name}`,account:l?.account_number||"",receipt:x.receipt_number,amount:x.amount_minor,method:r?.method||"",reference:r?.external_reference||"",receivedAt:r?.received_at||new Date().toISOString()}),hash=createHash("sha256").update(bytes).digest("hex");path=`${x.tenant_id}/receipts/${x.id}.pdf`;const{error:up}=await a.storage.from("borrower-documents").upload(path,bytes,{contentType:"application/pdf",upsert:false});if(up)throw up;await a.from("loan_repayment_receipts").update({document_path:path,document_hash:hash}).eq("id",x.id).is("document_path",null)}const{data:signed}=await a.storage.from("borrower-documents").createSignedUrl(path,120,{download:true});if(!signed)return new NextResponse("Unavailable",{status:503});await a.from("audit_events").insert({tenant_id:x.tenant_id,actor_profile_id:user.id,entity_type:"loan_repayment_receipt",entity_id:x.id,action:"loan.receipt_downloaded",metadata:{}});return NextResponse.redirect(signed.signedUrl)}
+import { createHash } from "node:crypto";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { requireUser } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { receiptPdf } from "@/lib/pdf/loan-documents";
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ receiptId: string }> },
+) {
+  const user = await requireUser(),
+    id = z.uuid().safeParse((await params).receiptId);
+  if (!id.success) return new NextResponse("Not found", { status: 404 });
+  const a = createAdminClient();
+  const { data: x, error } = await a
+    .from("loan_repayment_receipts")
+    .select(
+      "id,tenant_id,receipt_number,amount_minor,document_path,document_hash,loan_repayments!loan_receipts_repayment_tenant_fk(method,external_reference,received_at,loans!repayments_loan_tenant_fk(account_number,borrowers(first_name,last_name,profile_id),tenants(legal_name,trading_name)))",
+    )
+    .eq("id", id.data)
+    .maybeSingle();
+  if (error || !x) return new NextResponse("Not found", { status: 404 });
+  const r = Array.isArray(x.loan_repayments)
+      ? x.loan_repayments[0]
+      : x.loan_repayments,
+    l = r && (Array.isArray(r.loans) ? r.loans[0] : r.loans),
+    b = l && (Array.isArray(l.borrowers) ? l.borrowers[0] : l.borrowers),
+    t = l && (Array.isArray(l.tenants) ? l.tenants[0] : l.tenants);
+  if (b?.profile_id !== user.id)
+    return new NextResponse("Not found", { status: 404 });
+  let path = x.document_path;
+  if (!path) {
+    const bytes = await receiptPdf({
+        lender: t?.trading_name || t?.legal_name || "Lender",
+        borrower: `${b.first_name} ${b.last_name}`,
+        account: l?.account_number || "",
+        receipt: x.receipt_number,
+        amount: x.amount_minor,
+        method: r?.method || "",
+        reference: r?.external_reference || "",
+        receivedAt: r?.received_at || new Date().toISOString(),
+      }),
+      hash = createHash("sha256").update(bytes).digest("hex");
+    path = `${x.tenant_id}/receipts/${x.id}.pdf`;
+    const { error: up } = await a.storage
+      .from("borrower-documents")
+      .upload(path, bytes, { contentType: "application/pdf", upsert: false });
+    if (up) throw up;
+    await a
+      .from("loan_repayment_receipts")
+      .update({ document_path: path, document_hash: hash })
+      .eq("id", x.id)
+      .is("document_path", null);
+  }
+  const { data: signed } = await a.storage
+    .from("borrower-documents")
+    .createSignedUrl(path, 120, { download: true });
+  if (!signed) return new NextResponse("Unavailable", { status: 503 });
+  await a
+    .from("audit_events")
+    .insert({
+      tenant_id: x.tenant_id,
+      actor_profile_id: user.id,
+      entity_type: "loan_repayment_receipt",
+      entity_id: x.id,
+      action: "loan.receipt_downloaded",
+      metadata: {},
+    });
+  return NextResponse.redirect(signed.signedUrl);
+}

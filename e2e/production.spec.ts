@@ -9,6 +9,13 @@ test("public homepage and sign-in are available", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Welcome" })).toBeVisible();
 });
 
+test("borrower lender directory renders clearly", async ({ page }) => {
+  await page.goto("/borrow");
+  await expect(page.getByRole("heading", { name: "Start with the lender you choose." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Active lenders" })).toBeVisible();
+  await expect(page.getByText("No lenders are publicly available yet")).toBeVisible();
+});
+
 test("protected application routes require authentication", async ({ request }) => {
   for (const path of ["/onboarding", "/billing/plans", "/operations"]) {
     const response = await request.get(path, { maxRedirects: 0 });

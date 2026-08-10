@@ -1,2 +1,102 @@
-import Link from"next/link";import{requireTenantWorkspace}from"@/lib/tenant-auth";import{createAdminClient}from"@/lib/supabase/admin";import{formatMinorToZmw}from"@/lib/domain/billing";import{generateAgreement}from"./actions";
-export default async function Loans(){const{tenantId}=await requireTenantWorkspace(),a=createAdminClient();const[{data,error},{data:approved,error:approvedError}]=await Promise.all([a.from("loans").select("id,account_number,principal_minor,status,created_at,borrowers(first_name,last_name)").eq("tenant_id",tenantId).order("created_at",{ascending:false}),a.from("loan_applications").select("id,requested_amount_minor,borrowers(first_name,last_name),loan_products(name),loan_agreements(id)").eq("tenant_id",tenantId).eq("status","approved")]);if(error||approvedError)throw error??approvedError;const awaiting=(approved??[]).filter(x=>!x.loan_agreements.length);return <main className="p-6 lg:p-10"><p className="text-sm font-semibold text-[#16745f]">PORTFOLIO</p><h1 className="mt-2 text-3xl font-semibold">Loans</h1>{awaiting.length>0&&<section className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-6"><h2 className="font-semibold">Approved applications awaiting agreement</h2><div className="mt-4 space-y-3">{awaiting.map(x=>{const b=Array.isArray(x.borrowers)?x.borrowers[0]:x.borrowers,p=Array.isArray(x.loan_products)?x.loan_products[0]:x.loan_products;return <form action={generateAgreement} key={x.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white p-4"><input type="hidden" name="applicationId" value={x.id}/><span className="text-sm"><strong>{b?.first_name} {b?.last_name}</strong> · {p?.name} · {formatMinorToZmw(x.requested_amount_minor)}</span><button className="rounded-lg bg-emerald-800 px-4 py-2 text-sm text-white">Generate agreement</button></form>})}</div></section>}<section className="mt-8 overflow-hidden rounded-2xl bg-white shadow-sm">{!data.length?<p className="p-10 text-center text-sm text-[#64746f]">No loan accounts yet.</p>:<div className="divide-y">{data.map(x=>{const b=Array.isArray(x.borrowers)?x.borrowers[0]:x.borrowers;return <Link href={`/workspace/loans/${x.id}`} key={x.id} className="grid gap-2 p-5 text-sm hover:bg-[#f8faf9] md:grid-cols-[1fr_180px_140px]"><div><p className="font-medium">{x.account_number}</p><p className="text-xs text-[#64746f]">{b?.first_name} {b?.last_name}</p></div><span>{formatMinorToZmw(x.principal_minor)}</span><span className="capitalize">{x.status.replaceAll("_"," ")} →</span></Link>})}</div>}</section></main>}
+import Link from "next/link";
+import { requireTenantWorkspace } from "@/lib/tenant-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatMinorToZmw } from "@/lib/domain/billing";
+import { generateAgreement } from "./actions";
+export default async function Loans() {
+  const { tenantId } = await requireTenantWorkspace(),
+    a = createAdminClient();
+  const [{ data, error }, { data: approved, error: approvedError }] =
+    await Promise.all([
+      a
+        .from("loans")
+        .select(
+          "id,account_number,principal_minor,status,created_at,borrowers(first_name,last_name)",
+        )
+        .eq("tenant_id", tenantId)
+        .order("created_at", { ascending: false }),
+      a
+        .from("loan_applications")
+        .select(
+          "id,requested_amount_minor,borrowers!applications_borrower_tenant_fk(first_name,last_name),loan_products!applications_product_tenant_fk(name),loan_agreements!agreements_application_tenant_fk(id)",
+        )
+        .eq("tenant_id", tenantId)
+        .eq("status", "approved"),
+    ]);
+  if (error || approvedError) throw error ?? approvedError;
+  const awaiting = (approved ?? []).filter((x) => !x.loan_agreements.length);
+  return (
+    <main className="p-6 lg:p-10">
+      <p className="text-sm font-semibold text-[#16745f]">PORTFOLIO</p>
+      <h1 className="mt-2 text-3xl font-semibold">Loans</h1>
+      {awaiting.length > 0 && (
+        <section className="mt-8 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+          <h2 className="font-semibold">
+            Approved applications awaiting agreement
+          </h2>
+          <div className="mt-4 space-y-3">
+            {awaiting.map((x) => {
+              const b = Array.isArray(x.borrowers)
+                  ? x.borrowers[0]
+                  : x.borrowers,
+                p = Array.isArray(x.loan_products)
+                  ? x.loan_products[0]
+                  : x.loan_products;
+              return (
+                <form
+                  action={generateAgreement}
+                  key={x.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white p-4"
+                >
+                  <input type="hidden" name="applicationId" value={x.id} />
+                  <span className="text-sm">
+                    <strong>
+                      {b?.first_name} {b?.last_name}
+                    </strong>{" "}
+                    · {p?.name} · {formatMinorToZmw(x.requested_amount_minor)}
+                  </span>
+                  <button className="rounded-lg bg-emerald-800 px-4 py-2 text-sm text-white">
+                    Generate agreement
+                  </button>
+                </form>
+              );
+            })}
+          </div>
+        </section>
+      )}
+      <section className="mt-8 overflow-hidden rounded-2xl bg-white shadow-sm">
+        {!data.length ? (
+          <p className="p-10 text-center text-sm text-[#64746f]">
+            No loan accounts yet.
+          </p>
+        ) : (
+          <div className="divide-y">
+            {data.map((x) => {
+              const b = Array.isArray(x.borrowers)
+                ? x.borrowers[0]
+                : x.borrowers;
+              return (
+                <Link
+                  href={`/workspace/loans/${x.id}`}
+                  key={x.id}
+                  className="grid gap-2 p-5 text-sm hover:bg-[#f8faf9] md:grid-cols-[1fr_180px_140px]"
+                >
+                  <div>
+                    <p className="font-medium">{x.account_number}</p>
+                    <p className="text-xs text-[#64746f]">
+                      {b?.first_name} {b?.last_name}
+                    </p>
+                  </div>
+                  <span>{formatMinorToZmw(x.principal_minor)}</span>
+                  <span className="capitalize">
+                    {x.status.replaceAll("_", " ")} →
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

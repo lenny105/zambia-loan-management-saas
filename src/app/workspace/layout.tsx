@@ -1,2 +1,33 @@
-import type{ReactNode}from"react";import Link from"next/link";import{requireTenantWorkspace}from"@/lib/tenant-auth";import{WorkspaceNav}from"@/components/workspace-nav";
-export const dynamic="force-dynamic";export default async function WorkspaceLayout({children}:{children:ReactNode}){const{tenant}=await requireTenantWorkspace();return <div className="min-h-screen bg-[#f6f8f7] text-[#102a24] lg:grid lg:grid-cols-[260px_minmax(0,1fr)]"><aside className="bg-[#102f28] px-5 py-5 text-white lg:sticky lg:top-0 lg:h-screen lg:px-6 lg:py-7"><div className="flex justify-between lg:block"><div><p className="text-xs font-semibold uppercase tracking-[.2em] text-[#8fd1bd]">ZamLoan workspace</p><p className="mt-1 text-lg font-semibold">{tenant.trading_name||tenant.legal_name}</p></div><Link href="/" className="text-xs text-white/60">Public site</Link></div><WorkspaceNav/></aside><div className="min-w-0">{children}</div></div>}
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { requireTenantWorkspace } from "@/lib/tenant-auth";
+import { WorkspaceNav } from "@/components/workspace-nav";
+export const dynamic = "force-dynamic";
+export default async function WorkspaceLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { tenant } = await requireTenantWorkspace();
+  return (
+    <div className="min-h-screen bg-[#f6f8f7] text-[#102a24] lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
+      <aside className="bg-[#102f28] px-5 py-5 text-white lg:sticky lg:top-0 lg:h-screen lg:px-6 lg:py-7">
+        <div className="flex justify-between lg:block">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[.2em] text-[#8fd1bd]">
+              ZamLoan workspace
+            </p>
+            <p className="mt-1 text-lg font-semibold">
+              {tenant.trading_name || tenant.legal_name}
+            </p>
+          </div>
+          <Link href="/" className="text-xs text-white/60">
+            Public site
+          </Link>
+        </div>
+        <WorkspaceNav />
+      </aside>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}

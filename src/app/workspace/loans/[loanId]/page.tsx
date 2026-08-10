@@ -1,2 +1,101 @@
-import Link from"next/link";import{notFound}from"next/navigation";import{requireTenantWorkspace}from"@/lib/tenant-auth";import{createAdminClient}from"@/lib/supabase/admin";import{formatMinorToZmw}from"@/lib/domain/billing";import{DisbursementForm,RepaymentForm}from"@/components/loan-servicing-forms";
-export default async function Loan({params}:{params:Promise<{loanId:string}>}){const{tenantId}=await requireTenantWorkspace(),id=(await params).loanId;const{data:x,error}=await createAdminClient().from("loans").select("id,account_number,principal_minor,status,disbursed_at,borrowers(first_name,last_name),loan_agreements(total_interest_minor,total_fees_minor,total_payable_minor:principal_minor,accepted_at,terms_snapshot),loan_instalments(id,instalment_number,due_date,principal_minor,interest_minor,fees_minor,paid_minor),loan_repayments(id,amount_minor,method,external_reference,received_at,loan_repayment_receipts(receipt_number))").eq("id",id).eq("tenant_id",tenantId).maybeSingle();if(error||!x)notFound();const b=Array.isArray(x.borrowers)?x.borrowers[0]:x.borrowers,agreement=Array.isArray(x.loan_agreements)?x.loan_agreements[0]:x.loan_agreements;const outstanding=x.loan_instalments.reduce((s,i)=>s+i.principal_minor+i.interest_minor+i.fees_minor-i.paid_minor,0);return <main className="p-6 lg:p-10"><Link href="/workspace/loans" className="text-sm text-[#16745f]">← Loans</Link><p className="mt-8 text-sm font-semibold uppercase text-[#16745f]">{x.status.replaceAll("_"," ")}</p><h1 className="mt-2 text-3xl font-semibold">{x.account_number}</h1><p className="mt-2 text-[#64746f]">{b?.first_name} {b?.last_name} · Principal {formatMinorToZmw(x.principal_minor)}</p>{!agreement?.accepted_at&&<div className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">Awaiting borrower acceptance of the agreement.</div>}<div className="mt-8 grid gap-5 lg:grid-cols-2">{x.status==="approved"&&<DisbursementForm loanId={x.id} amount={(x.principal_minor/100).toFixed(2)}/>} {["active","past_due"].includes(x.status)&&<RepaymentForm loanId={x.id}/>}<section className="rounded-2xl bg-white p-6 shadow-sm"><h2 className="font-semibold">Balance</h2><p className="mt-4 text-3xl font-semibold">{formatMinorToZmw(outstanding)}</p><p className="mt-1 text-sm text-[#64746f]">Outstanding scheduled amount</p></section></div><section className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm"><h2 className="p-5 font-semibold">Repayment schedule</h2>{!x.loan_instalments.length?<p className="p-5 text-sm text-[#64746f]">Generated after recorded disbursement.</p>:<div className="divide-y">{x.loan_instalments.map(i=><div key={i.id} className="grid gap-2 p-4 text-sm md:grid-cols-[80px_150px_1fr_160px]"><span>#{i.instalment_number}</span><span>{i.due_date}</span><span>{formatMinorToZmw(i.principal_minor+i.interest_minor+i.fees_minor)}</span><span>Paid {formatMinorToZmw(i.paid_minor)}</span></div>)}</div>}</section></main>}
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { requireTenantWorkspace } from "@/lib/tenant-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatMinorToZmw } from "@/lib/domain/billing";
+import {
+  DisbursementForm,
+  RepaymentForm,
+} from "@/components/loan-servicing-forms";
+export default async function Loan({
+  params,
+}: {
+  params: Promise<{ loanId: string }>;
+}) {
+  const { tenantId } = await requireTenantWorkspace(),
+    id = (await params).loanId;
+  const { data: x, error } = await createAdminClient()
+    .from("loans")
+    .select(
+      "id,account_number,principal_minor,status,disbursed_at,borrowers(first_name,last_name),loan_agreements!loans_agreement_tenant_fk(total_interest_minor,total_fees_minor,total_payable_minor:principal_minor,accepted_at,terms_snapshot),loan_instalments!instalments_loan_tenant_fk(id,instalment_number,due_date,principal_minor,interest_minor,fees_minor,paid_minor),loan_repayments!repayments_loan_tenant_fk(id,amount_minor,method,external_reference,received_at,loan_repayment_receipts!loan_receipts_repayment_tenant_fk(receipt_number))",
+    )
+    .eq("id", id)
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+  if (error || !x) notFound();
+  const b = Array.isArray(x.borrowers) ? x.borrowers[0] : x.borrowers,
+    agreement = Array.isArray(x.loan_agreements)
+      ? x.loan_agreements[0]
+      : x.loan_agreements;
+  const outstanding = x.loan_instalments.reduce(
+    (s, i) =>
+      s + i.principal_minor + i.interest_minor + i.fees_minor - i.paid_minor,
+    0,
+  );
+  return (
+    <main className="p-6 lg:p-10">
+      <Link href="/workspace/loans" className="text-sm text-[#16745f]">
+        ← Loans
+      </Link>
+      <p className="mt-8 text-sm font-semibold uppercase text-[#16745f]">
+        {x.status.replaceAll("_", " ")}
+      </p>
+      <h1 className="mt-2 text-3xl font-semibold">{x.account_number}</h1>
+      <p className="mt-2 text-[#64746f]">
+        {b?.first_name} {b?.last_name} · Principal{" "}
+        {formatMinorToZmw(x.principal_minor)}
+      </p>
+      {!agreement?.accepted_at && (
+        <div className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
+          Awaiting borrower acceptance of the agreement.
+        </div>
+      )}
+      <div className="mt-8 grid gap-5 lg:grid-cols-2">
+        {x.status === "approved" && (
+          <DisbursementForm
+            loanId={x.id}
+            amount={(x.principal_minor / 100).toFixed(2)}
+          />
+        )}{" "}
+        {["active", "past_due"].includes(x.status) && (
+          <RepaymentForm loanId={x.id} />
+        )}
+        <section className="rounded-2xl bg-white p-6 shadow-sm">
+          <h2 className="font-semibold">Balance</h2>
+          <p className="mt-4 text-3xl font-semibold">
+            {formatMinorToZmw(outstanding)}
+          </p>
+          <p className="mt-1 text-sm text-[#64746f]">
+            Outstanding scheduled amount
+          </p>
+        </section>
+      </div>
+      <section className="mt-6 overflow-hidden rounded-2xl bg-white shadow-sm">
+        <h2 className="p-5 font-semibold">Repayment schedule</h2>
+        {!x.loan_instalments.length ? (
+          <p className="p-5 text-sm text-[#64746f]">
+            Generated after recorded disbursement.
+          </p>
+        ) : (
+          <div className="divide-y">
+            {x.loan_instalments.map((i) => (
+              <div
+                key={i.id}
+                className="grid gap-2 p-4 text-sm md:grid-cols-[80px_150px_1fr_160px]"
+              >
+                <span>#{i.instalment_number}</span>
+                <span>{i.due_date}</span>
+                <span>
+                  {formatMinorToZmw(
+                    i.principal_minor + i.interest_minor + i.fees_minor,
+                  )}
+                </span>
+                <span>Paid {formatMinorToZmw(i.paid_minor)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}
