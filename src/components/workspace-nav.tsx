@@ -9,6 +9,8 @@ const items = [
   ["Loan products", "/workspace/products"],
   ["Loans", "/workspace/loans"],
   ["Repayments", "/workspace/repayments"],
+  ["Reminders", "/workspace/reminders"],
+  ["Portfolio reports", "/workspace/reports"],
   ["Complaints", "/workspace/complaints"],
   ["Collateral", "/workspace/collateral"],
   ["Branches", "/workspace/branches"],

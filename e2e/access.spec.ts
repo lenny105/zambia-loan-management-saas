@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("protected routes", () => {
-  for (const path of ["/onboarding", "/operations", "/workspace", "/portal"]) {
+  for (const path of ["/onboarding", "/operations", "/workspace", "/workspace/reminders", "/workspace/reports", "/portal"]) {
     test(`${path} redirects an unauthenticated request`, async ({ request }) => {
       const response = await request.get(path, { maxRedirects: 0 });
       expect(response.status()).toBe(307);

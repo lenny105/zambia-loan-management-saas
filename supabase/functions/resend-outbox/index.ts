@@ -69,6 +69,12 @@ function render(job: OutboxJob) {
       destination: "Use the secure invitation button below. The invitation expires after seven days and only works for this email address.",
       footer: "Only accept invitations from organisations you recognise.",
     },
+    borrower_repayment_reminder: {
+      heading: job.payload.kind === "overdue" ? "Repayment overdue" : job.payload.kind === "due_today" ? "Repayment due today" : "Upcoming repayment",
+      body: `${escapeHtml(String(job.payload.lenderName ?? "Your lender"))} has sent a repayment reminder for an instalment due ${escapeHtml(String(job.payload.dueDate ?? ""))}.`,
+      destination: "Sign in to your borrower portal to review the current schedule and contact your lender if you need assistance.",
+      footer: "This reminder is sent on behalf of your lender. EZER-X provides software only and does not collect or enforce this loan.",
+    },
   };
   const template = templates[job.message_type] ?? {
     heading: "ZamLoan notification",
