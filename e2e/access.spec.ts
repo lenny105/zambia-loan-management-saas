@@ -19,3 +19,10 @@ test("sign-in clearly routes borrowers and new lenders", async ({ page }) => {
   await expect(page.getByRole("link", { name: /Looking for a loan/ })).toHaveAttribute("href", "/borrow");
   await expect(page.getByRole("link", { name: /New lender/ })).toHaveAttribute("href", "/onboarding");
 });
+
+test("staff invitations preserve their secure return route", async ({ request }) => {
+  const response = await request.get("/invite/example-secure-invitation-token", { maxRedirects: 0 });
+  expect(response.status()).toBe(307);
+  expect(response.headers().location).toContain("/auth/sign-in?next=");
+  expect(decodeURIComponent(response.headers().location ?? "")).toContain("/invite/example-secure-invitation-token");
+});

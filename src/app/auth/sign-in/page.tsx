@@ -9,10 +9,10 @@ export default async function SignIn({
 }) {
   const requested = (await searchParams).next;
   const nextPath =
-    requested?.startsWith("/borrow/") && !requested.startsWith("//")
+    requested && !requested.startsWith("//") && (requested.startsWith("/borrow/") || requested.startsWith("/invite/"))
       ? requested
       : undefined;
-  const borrower = Boolean(nextPath);
+  const borrower = Boolean(nextPath?.startsWith("/borrow/"));
 
   return (
     <main className="min-h-screen bg-[#eef3ef] p-3 text-[#102a24] sm:p-5">
